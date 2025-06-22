@@ -106,6 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
   supa
     .channel('sitches')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sitches' }, (payload) => {
+      console.log('New sitch received!', payload.new);
       renderSitch(payload.new);
     })
     .subscribe();
