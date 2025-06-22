@@ -37,10 +37,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Renders a single sitch object to the list.
+   * Creates an LI element for a given sitch object.
    * @param {object} sitch - The sitch object from Supabase.
+   * @returns {HTMLLIElement} The created list item element.
    */
-  function renderSitchToList(sitch) {
+  function createSitchListItem(sitch) {
     // Create timestamp
     const now = new Date(sitch.created_at);
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -50,13 +51,21 @@ document.addEventListener('DOMContentLoaded', () => {
     let hours = now.getHours();
     const ampm = hours >= 12 ? 'PM' : 'AM';
     hours = hours % 12;
-    hours = hours ? hours : 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
     const minutes = String(now.getMinutes()).padStart(2, '0');
     const timestamp = `[${month} ${day}, ${year} · ${hours}:${minutes} ${ampm}]`;
 
-    // Add to the list below, prepending to show newest first
     const li = document.createElement('li');
     li.textContent = `${sitch.message} ${timestamp}`;
+    return li;
+  }
+
+  /**
+   * Renders a single sitch object to the list by prepending it.
+   * @param {object} sitch - The sitch object from Supabase.
+   */
+  function renderSitchToList(sitch) {
+    const li = createSitchListItem(sitch);
     document.getElementById('dropList').prepend(li);
   }
 
@@ -75,11 +84,13 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    // Clear existing list before loading
-    document.getElementById('dropList').innerHTML = '';
-    // Iterate over a reversed copy of the data so prepending adds newest items last, resulting in a newest-to-oldest list.
-    for (const sitch of [...data].reverse()) {
-      renderSitchToList(sitch);
+    const dropList = document.getElementById('dropList');
+    dropList.innerHTML = '';
+    
+    // Data is newest-to-oldest, so we append each one to maintain order.
+    for (const sitch of data) {
+      const li = createSitchListItem(sitch);
+      dropList.append(li);
     }
     
     // Add a marker for the newest sitch (the original data array is unchanged)
