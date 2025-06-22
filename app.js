@@ -25,14 +25,25 @@ map.on('click', function(e) {
   }
 });
 
+// Update: Handle form submission to add marker at map center AND keep the list
 document.getElementById('dropForm').addEventListener('submit', function(e) {
   e.preventDefault();
   const input = document.getElementById('dropInput');
   const text = input.value.trim();
   if (text) {
+    // Get the current center of the map
+    const center = map.getCenter();
+    // Add marker to the map
+    const marker = L.marker(center).addTo(map)
+      .bindPopup(text)
+      .openPopup();
+    sitches.push({ latlng: center, message: text });
+
+    // Add to the list below as before
     const li = document.createElement('li');
     li.textContent = text + ' - [Send KAS Tip]';
     document.getElementById('dropList').appendChild(li);
+
     input.value = '';
   }
 });
