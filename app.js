@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   map.locate({ setView: true, maxZoom: 16 });
 
   // --- App Logic ---
+  let latestMarker = null;
 
   const customIcon = L.divIcon({
     className: 'custom-marker',
@@ -18,15 +19,28 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /**
-   * Renders a single sitch object to the map and the list.
+   * Updates the map to show only the latest sitch marker.
+   * Removes the old marker and adds the new one.
    * @param {object} sitch - The sitch object from Supabase.
    */
-  function renderSitch(sitch) {
-    // Add marker to map
-    L.marker([sitch.lat, sitch.lng], { icon: customIcon })
-      .addTo(map)
-      .bindPopup(sitch.message);
+  function updateMapMarker(sitch) {
+    // Remove the previous marker if it exists
+    if (latestMarker) {
+      map.removeLayer(latestMarker);
+    }
 
+    // Create a new marker, add it to the map, and open its popup
+    latestMarker = L.marker([sitch.lat, sitch.lng], { icon: customIcon })
+      .addTo(map)
+      .bindPopup(sitch.message)
+      .openPopup();
+  }
+
+  /**
+   * Renders a single sitch object to the list.
+   * @param {object} sitch - The sitch object from Supabase.
+   */
+  function renderSitchToList(sitch) {
     // Create timestamp
     const now = new Date(sitch.created_at);
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -64,7 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Clear existing list before loading
     document.getElementById('dropList').innerHTML = '';
     for (const sitch of data) {
-      renderSitch(sitch);
+      renderSitchToList(sitch);
+    }
+    
+    // Add a marker for the newest sitch
+    if (data && data.length > 0) {
+      updateMapMarker(data[0]);
     }
   }
 
@@ -107,12 +126,12 @@ document.addEventListener('DOMContentLoaded', () => {
     .channel('sitches')
     .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sitches' }, (payload) => {
       console.log('New sitch received!', payload.new);
-      renderSitch(payload.new);
+      renderSitchToList(payload.new);
+      updateMapMarker(payload.new);
     })
     .subscribe();
 
   // Load initial data
-  console.log("Loading initial Sitches...");
   loadInitialSitches();
 
 });
