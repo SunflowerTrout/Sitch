@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     attribution: '&copy; OpenStreetMap contributors'
   }).addTo(map);
 
-  map.locate({ setView: true, maxZoom: 16 });
+  map.locate({ 
+    setView: true, 
+    maxZoom: 16,
+    enableHighAccuracy: true 
+  });
 
   // --- App Logic ---
   let latestMarker = null;
@@ -137,7 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     submitButton.textContent = 'Getting Location...';
 
     // We call locate() to get a fresh location, and use .once() to handle the result
-    map.locate();
+    map.locate({ enableHighAccuracy: true });
 
     map.once('locationfound', async (locEvent) => {
       await saveSitch(message, locEvent.latlng);
@@ -147,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     map.once('locationerror', (err) => {
-      alert("Could not get your location. Please enable location services or click on the map to place your Sitch.");
+      alert("Could not get your location. Please check your browser's location permissions and try again.");
       submitButton.disabled = false;
       submitButton.textContent = 'Send it!';
       console.error("Location error:", err.message);
