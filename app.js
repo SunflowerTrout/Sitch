@@ -47,7 +47,7 @@ function renderSitch(sitch) {
  * Loads the initial sitches from the database.
  */
 async function loadInitialSitches() {
-  const { data, error } = await supabase
+  const { data, error } = await supa
     .from('sitches')
     .select('*')
     .order('created_at', { ascending: false })
@@ -71,7 +71,7 @@ async function loadInitialSitches() {
  * @param {object} latlng - The Leaflet lat/lng object.
  */
 async function saveSitch(message, latlng) {
-  const { error } = await supabase
+  const { error } = await supa
     .from('sitches')
     .insert([{ message: message, lat: latlng.lat, lng: latlng.lng }]);
 
@@ -100,7 +100,7 @@ document.getElementById('dropForm').addEventListener('submit', async (e) => {
 });
 
 // Listen for new sitches in real-time
-supabase
+supa
   .channel('sitches')
   .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'sitches' }, (payload) => {
     renderSitch(payload.new);
