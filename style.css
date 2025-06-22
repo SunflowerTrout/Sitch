@@ -36,12 +36,21 @@ li {
   background: #fff;
   margin-top: 1rem;
   padding: 1rem;
-  border-left: 4px solid #00c2ff;
+  border-left: 4px solid rgb(73, 234, 203);
 }
 #map {
   height: 400px;
   width: 100%;
   margin-bottom: 1em;
+}
+
+.custom-marker {
+  background-color: rgb(73, 234, 203);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.6);
 }
 
 #kaspa-icon {

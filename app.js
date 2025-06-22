@@ -14,11 +14,17 @@ map.locate({ setView: true, maxZoom: 16 });
 // Store Sitches in memory
 const sitches = [];
 
+// Create a custom icon
+const customIcon = L.divIcon({
+  className: 'custom-marker',
+  iconSize: [20, 20],
+});
+
 // Handle map clicks to add a Sitch
 map.on('click', function(e) {
   const message = prompt("What's happening here?");
   if (message) {
-    const marker = L.marker(e.latlng).addTo(map)
+    const marker = L.marker(e.latlng, { icon: customIcon }).addTo(map)
       .bindPopup(message)
       .openPopup();
     sitches.push({ latlng: e.latlng, message });
@@ -34,14 +40,14 @@ document.getElementById('dropForm').addEventListener('submit', function(e) {
     // Get the current center of the map
     const center = map.getCenter();
     // Add marker to the map
-    const marker = L.marker(center).addTo(map)
+    const marker = L.marker(center, { icon: customIcon }).addTo(map)
       .bindPopup(text)
       .openPopup();
     sitches.push({ latlng: center, message: text });
 
     // Add to the list below as before
     const li = document.createElement('li');
-    li.textContent = text + ' - [Send KAS Tip]';
+    li.textContent = text;
     document.getElementById('dropList').appendChild(li);
 
     input.value = '';
