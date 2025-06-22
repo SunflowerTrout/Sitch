@@ -45,9 +45,25 @@ document.getElementById('dropForm').addEventListener('submit', function(e) {
       .openPopup();
     sitches.push({ latlng: center, message: text });
 
-    // Add to the list below as before
+    // --- Timestamp Creation ---
+    const now = new Date();
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const month = months[now.getMonth()];
+    const day = now.getDate();
+    const year = now.getFullYear();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    // Extract timezone name (e.g., "Pacific Daylight Time")
+    const timezoneMatch = now.toString().match(/\\((.+)\\)/);
+    const timezone = timezoneMatch ? timezoneMatch[1] : "";
+
+    const timestamp = `[${month}, ${day} - ${year}, ${hours}:${minutes} ${timezone}]`;
+    // --- End Timestamp Creation ---
+
+    // Add to the list below with the timestamp
     const li = document.createElement('li');
-    li.textContent = text;
+    li.textContent = `${text} ${timestamp}`;
     document.getElementById('dropList').appendChild(li);
 
     input.value = '';
