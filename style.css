@@ -23,6 +23,10 @@ input {
 }
 button {
   padding: 0.5rem 1rem;
+  background-color: rgb(111, 199, 186);
+  color: rgb(35, 31, 32);
+  border: none;
+  cursor: pointer;
 }
 ul {
   list-style: none;
@@ -38,4 +42,13 @@ li {
   height: 400px;
   width: 100%;
   margin-bottom: 1em;
+}
+
+#kaspa-icon {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 80px;
+  height: 80px;
+  z-index: 1000;
 }
