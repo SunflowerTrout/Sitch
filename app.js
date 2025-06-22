@@ -77,11 +77,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear existing list before loading
     document.getElementById('dropList').innerHTML = '';
-    for (const sitch of data) {
+    // Iterate over a reversed copy of the data so prepending adds newest items last, resulting in a newest-to-oldest list.
+    for (const sitch of [...data].reverse()) {
       renderSitchToList(sitch);
     }
     
-    // Add a marker for the newest sitch
+    // Add a marker for the newest sitch (the original data array is unchanged)
     if (data && data.length > 0) {
       updateMapMarker(data[0]);
     }
@@ -111,14 +112,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.getElementById('dropForm').addEventListener('submit', async (e) => {
+  document.getElementById('dropForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    const input = document.getElementById('dropInput');
-    const text = input.value.trim();
-    if (text) {
-      await saveSitch(text, map.getCenter());
-      input.value = '';
+    const dropInput = document.getElementById('dropInput');
+    const submitButton = e.target.querySelector('button');
+    const message = dropInput.value.trim();
+
+    if (!message) {
+      return;
     }
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Getting Location...';
+
+    // We call locate() to get a fresh location, and use .once() to handle the result
+    map.locate();
+
+    map.once('locationfound', async (locEvent) => {
+      await saveSitch(message, locEvent.latlng);
+      dropInput.value = '';
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send it!';
+    });
+
+    map.once('locationerror', (err) => {
+      alert("Could not get your location. Please enable location services or click on the map to place your Sitch.");
+      submitButton.disabled = false;
+      submitButton.textContent = 'Send it!';
+      console.error("Location error:", err.message);
+    });
   });
 
   // Listen for new sitches in real-time
