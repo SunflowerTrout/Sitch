@@ -51,14 +51,15 @@ document.getElementById('dropForm').addEventListener('submit', function(e) {
     const month = months[now.getMonth()];
     const day = now.getDate();
     const year = now.getFullYear();
-    const hours = String(now.getHours()).padStart(2, '0');
+    
+    let hours = now.getHours();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // Handle midnight (0) as 12
+    
     const minutes = String(now.getMinutes()).padStart(2, '0');
     
-    // Extract timezone name (e.g., "Pacific Daylight Time")
-    const timezoneMatch = now.toString().match(/\\((.+)\\)/);
-    const timezone = timezoneMatch ? timezoneMatch[1] : "";
-
-    const timestamp = `[${month}, ${day} - ${year}, ${hours}:${minutes} ${timezone}]`;
+    const timestamp = `[${month} ${day}, ${year} · ${hours}:${minutes} ${ampm}]`;
     // --- End Timestamp Creation ---
 
     // Add to the list below with the timestamp
